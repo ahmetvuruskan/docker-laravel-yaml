@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  php:
+    container_name: ${PROJECT_NAME}-php
+    hostname: ${PROJECT_NAME}-php
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www/html
+      - ./supervisor:/etc/supervisor/conf.d:ro
+      - ./supervisor/log:/var/log/supervisor
+    networks:
+      - ${PROJECT_NAME}-php
+
+  nginx:
+    container_name: ${PROJECT_NAME}-nginx
+    hostname: ${PROJECT_NAME}-nginx
+    image: nginx:latest
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - ${PROJECT_NAME}-php
+
+  postgres:
+    container_name: ${PROJECT_NAME}-database
+    hostname: ${PROJECT_NAME}-database
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${DBUSER}
+      POSTGRES_PASSWORD: ${DBPASS}
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - ${PROJECT_NAME}-php
+
+  redis:
+    container_name: ${PROJECT_NAME}-redis
+    hostname: ${PROJECT_NAME}-redis
+    image: redis:latest
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    #Open port to public is optional, I usually connect with backend service like php service on up check conf file
+#    ports:
+#      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - ${PROJECT_NAME}-php
+
+  rabbitmq:
+    # default management login guest:guest
+    container_name: ${PROJECT_NAME}-rabbitmq
+    hostname: ${PROJECT_NAME}-rabbitmq
+    image: rabbitmq:4.0.5-management
+    ports:
+      - "15672:15672"
+    networks:
+      - ${PROJECT_NAME}-php
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  mongo:
+    image: mongo
+    container_name: ${PROJECT_NAME}-mongo
+    hostname: ${PROJECT_NAME}-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGOUSER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGOPASS}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/etc/mongo
+    networks:
+      - ${PROJECT_NAME}-php
+
+networks:
+  ${PROJECT_NAME}-php:
+    name: ${PROJECT_NAME}-php
+    driver: bridge
+
+volumes:
+  postgres:
+  redis_data:
+  rabbitmq_data:
+  mongodb_data:
