@@ -39,5 +39,5 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 WORKDIR /var/www/html
 COPY . /var/www/html
 
-COPY ./supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./supervisor/conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

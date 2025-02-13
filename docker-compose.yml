@@ -8,7 +8,6 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/var/www/html
-      - ./supervisor:/etc/supervisor/conf.d:ro
       - ./supervisor/log:/var/log/supervisor
     networks:
       - laravel-project-php
