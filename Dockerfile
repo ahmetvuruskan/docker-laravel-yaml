@@ -1,34 +1,42 @@
 FROM php:8.3-fpm
 
 # Install system dependencies
-RUN apt-get clean && apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
+    apt-utils \
+    curl \
+    unzip \
+    supervisor \
+    cron \
     libpq-dev \
     libicu-dev \
-    # nano \ optional
-    # supervisor \  optional
-    # cron \ optional
-
-# for all extensions https://gist.github.com/chronon/95911d21928cff786e306c23e7d1d3f3
-RUN docker-php-ext-install intl
-RUN docker-php-ext-install pdo # For mysql change to mysqli or your db extension
-RUN docker-php-ext-install pdo_pgsql # For mysql change to pdo_mysql or your db extension
-RUN docker-php-ext-install mbsting
-RUN docker-php-ext-install xml
-RUN docker-php-ext-install sockets
-RUN docker-php-ext-install pgsql && docker-php-ext-enable pgsql
-RUN apt-get install -y \
+    libonig-dev \
     libzip-dev \
+    libxml2-dev \
     zip \
-    && docker-php-ext-install zip
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install \
+    intl \
+    pdo \
+    pdo_pgsql \
+    mbstring \
+    xml \
+    sockets \
+    pgsql \
+    zip \
+    && docker-php-ext-enable pgsql \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install MongoDB PHP extension
 RUN pecl install mongodb && docker-php-ext-enable mongodb
-# RUN apt-get clean && rm -rf /var/lib/apt/lists/* optional
 
-
+# Install Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
     && php -r "unlink('composer-setup.php');" \
     && mv composer.phar /usr/local/bin/composer
 
+# Set working directory
 WORKDIR /var/www/html
 COPY . /var/www/html
+
+CMD service supervisor start && service cron start && php-fpm

@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   php:
-    container_name: ${PROJECT_NAME}-php
-    hostname: ${PROJECT_NAME}-php
+    container_name: laravel-project-php
+    hostname: laravel-project-php
     build:
       dockerfile: Dockerfile
     volumes:
@@ -11,11 +11,11 @@ services:
       - ./supervisor:/etc/supervisor/conf.d:ro
       - ./supervisor/log:/var/log/supervisor
     networks:
-      - ${PROJECT_NAME}-php
+      - laravel-project-php
 
   nginx:
-    container_name: ${PROJECT_NAME}-nginx
-    hostname: ${PROJECT_NAME}-nginx
+    container_name: laravel-project-nginx
+    hostname: laravel-project-nginx
     image: nginx:latest
     ports:
       - "8000:80"
@@ -23,25 +23,25 @@ services:
       - .:/var/www/html
       - ./nginx:/etc/nginx/conf.d
     networks:
-      - ${PROJECT_NAME}-php
+      - laravel-project-php
 
   postgres:
-    container_name: ${PROJECT_NAME}-database
-    hostname: ${PROJECT_NAME}-database
+    container_name: laravel-project-database
+    hostname: laravel-project-database
     image: postgres:latest
     environment:
-      POSTGRES_USER: ${DBUSER}
-      POSTGRES_PASSWORD: ${DBPASS}
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
     volumes:
       - postgres:/data/postgres
     ports:
       - "5432:5432"
     networks:
-      - ${PROJECT_NAME}-php
+      - laravel-project-php
 
   redis:
-    container_name: ${PROJECT_NAME}-redis
-    hostname: ${PROJECT_NAME}-redis
+    container_name: laravel-project-redis
+    hostname: laravel-project-redis
     image: redis:latest
     command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
     #Open port to public is optional, I usually connect with backend service like php service on up check conf file
@@ -51,37 +51,37 @@ services:
       - redis_data:/data
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
     networks:
-      - ${PROJECT_NAME}-php
+      - laravel-project-php
 
   rabbitmq:
     # default management login guest:guest
-    container_name: ${PROJECT_NAME}-rabbitmq
-    hostname: ${PROJECT_NAME}-rabbitmq
+    container_name: laravel-project-rabbitmq
+    hostname: laravel-project-rabbitmq
     image: rabbitmq:4.0.5-management
     ports:
       - "15672:15672"
     networks:
-      - ${PROJECT_NAME}-php
+      - laravel-project-php
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   mongo:
     image: mongo
-    container_name: ${PROJECT_NAME}-mongo
-    hostname: ${PROJECT_NAME}-mongo
+    container_name: laravel-project-mongo
+    hostname: laravel-project-mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGOUSER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGOPASS}
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopass
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/etc/mongo
     networks:
-      - ${PROJECT_NAME}-php
+      - laravel-project-php
 
 networks:
-  ${PROJECT_NAME}-php:
-    name: ${PROJECT_NAME}-php
+  laravel-project-php:
+    name: laravel-project-php
     driver: bridge
 
 volumes:
