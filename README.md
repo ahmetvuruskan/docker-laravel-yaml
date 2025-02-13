@@ -1,7 +1,30 @@
-This repository contains the configuration for running a Laravel application using Docker. It simplifies the development environment setup by containerizing the application and its dependencies.
 
-To get started, ensure you have Docker and Docker Compose installed.
+# Laravel Application with Docker
 
-The Docker setup includes services for the Laravel application, a database, and any additional dependencies needed. Once the containers are built and running, you can access your application in the browser using the specified URL.
+This repository provides the configuration for running a Laravel application using Docker. It simplifies the setup of your development environment by containerizing the application and its dependencies.
 
-Docker php extensions list  https://gist.github.com/chronon/95911d21928cff786e306c23e7d1d3f3
+## Prerequisites
+
+Before you begin, ensure that you have the following installed:
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+
+## Docker PHP Extensions
+
+For a list of available PHP extensions for the Docker environment, you can refer to this [gist](https://gist.github.com/chronon/95911d21928cff786e306c23e7d1d3f3).
+
+## Additional Configuration
+
+You can modify the `docker-compose.yml` file to adjust settings like:
+- PHP versions
+- Database credentials
+- Ports and volumes
+
+## Troubleshooting
+
+If you encounter issues, try the following:
+1. Ensure Docker is running on your machine.
+2. Rebuild the containers with `docker-compose up --build` if changes are made to the Docker configuration.
+3. Check the logs of a specific service with `docker-compose logs <service-name>`.

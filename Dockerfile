@@ -1,7 +1,7 @@
 FROM php:8.3-fpm
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends\
     apt-utils \
     curl \
     unzip \
@@ -39,4 +39,5 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 WORKDIR /var/www/html
 COPY . /var/www/html
 
-CMD service supervisor start && service cron start && php-fpm
+COPY ./supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
